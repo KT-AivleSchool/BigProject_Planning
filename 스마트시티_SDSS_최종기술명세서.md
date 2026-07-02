@@ -1,106 +1,113 @@
-# [기술명세서] 스마트시티 SDSS 플랫폼 최종 기술 명세서 (WBS, 아키텍처, ERD)
+# [기술명세서] 지능형 다목적 스마트시티 입지 선정 및 공공갈등 예측 플랫폼 'OmniSite' 최종 기술 명세서 (v1.0.0-prototype)
 
-본 기술명세서는 스마트시티 실외 흡연구역 최적 입지 선정 및 검증 플랫폼(SDSS) 개발팀원(주니어 A~G)이 참조하여 데이터베이스를 구축하고, 주차별 스프린트를 병렬 완수할 수 있도록 설계된 공식 엔지니어링 명세서입니다.
+본 기술명세서는 스마트시티 다목적 공간 의사결정 및 공공갈등 예측 플랫폼 **OmniSite(옴니사이트)**의 개발팀원(주니어 A~G)이 참조하여 데이터베이스를 구축하고, 주차별 스프린트를 병렬 완수할 수 있도록 설계된 공식 엔지니어링 명세서입니다.
 
 ---
 
 ## 1. 📅 1주차~8주차 초정밀 개발 스프린트 계획서 (WBS)
 
-### 1주차: 개발 환경 구축 및 기초 데이터 수집
-*   **주니어 A (지도):** Mapbox GL JS 로컬 연동 환경 설정 및 Mapbox Access Token 발급.
-*   **주니어 B (UI):** Admin 대시보드(상태 표시등 탑재) 및 파일 업로드 폼 마크업 퍼블리싱.
-*   **주니어 C (데이터):** 용산구 13대 데이터셋 원천 파일(CSV/SHP/TXT) 수집 및 가공 가이드 준수 검토.
-*   **주니어 D (백엔드):** PostgreSQL/PostGIS DB 테이블 DDL 정의 및 FastAPI 기본 뼈대 코드 구축.
-*   **주니어 E (AI):** LangGraph 라이브러리 세팅 및 자치구 조례 기반 단순 RAG 파이프라인 설계.
-*   **주니어 F (산출물):** 타당성 검증 최종 보고서 표준 양식 HTML/CSS 레이아웃 프로토타입 마크업.
-*   **주니어 G (DevOps):** FastAPI, PostGIS, React를 원클릭 가동할 `docker-compose.yml` 작성 및 배포.
+### 1주차: 개발 환경 구축 및 통합 FastAPI 뼈대 셋업
+*   **주니어 A (지도):** Mapbox GL JS 로컬 연동 및 Next.js 프레임워크 상의 지적 레이어 오버레이 환경 구성.
+*   **주니어 B (UI):** Next.js 기반 다목적 파일 일괄 업로드 폼 및 AI 감리 피드백 팝업창 마크업.
+*   **주니어 C (데이터):** 용산구 13종 기초 데이터셋 가독 가공 및 CSV/SHP 분류.
+*   **주니어 D (백엔드):** 통합 FastAPI 환경 구축, SQLAlchemy 기반 PostgreSQL/PostGIS DB 연결 및 ORM 모델 기초 작업.
+*   **주니어 E (AI):** Python FastAPI 연동, 조례 RAG 임베딩 및 LangGraph 3자 페르소나 독립 토론 루프 초안 설계.
+*   **주니어 F (산출물):** WeasyPrint 활용 행정 PDF 보고서 템플릿 마크업 작성.
+*   **주니어 G (DevOps):** AWS EKS 클러스터 테넌트 및 VPC 서브넷, IAM 권한(IRSA) 인프라 아키처 수립.
 
-### 2주차: 데이터 적재 (ETL) 파이프라인 완성
-*   **주니어 A (지도):** 서울시 동별 공간경계 GeoJSON 데이터를 받아 지도 레이어 상에 오버레이 성공.
-*   **주니어 B (UI):** 13대 데이터셋 항목별 개별 파일 업로드 UI 컴포넌트 이벤트 핸들러 구현.
-*   **주니어 C (데이터):** GeoPandas를 활용하여 연속지적도(SHP) 국공유지 필지만 슬라이싱 처리하고 CRS를 `EPSG:4326`으로 변환하는 전처리 코드 개발.
-*   **주니어 D (백엔드):** FastAPI 파일 업로드 엔드포인트 구현 및 Pandas `to_sql` 연동 적재 완료.
-*   **주니어 E (AI):** LangGraph 멀티 에이전트(3인 페르소나) 간의 대화 상태 머신 제어 로직 설계.
-*   **주니어 F (산출물):** HTML 보고서 상에 XAI 정량 지표용 차트(Chart.js) 렌더링 스크립트 연동.
-*   **주니어 G (DevOps):** 주니어 C의 파이썬 정제 스크립트 실행 환경 통합 및 DB 마이그레이션 도구 연동.
+### 2주차: 데이터셋 일괄 업로드 및 AI 감리 (HITL) 완성
+*   **주니어 A (지도):** 자치구별 경계 GeoJSON 로드 및 Next.js SSR 환경 상의 격리 레이어 시각화.
+*   **주니어 B (UI):** AI 감리 경고 메시지에 따른 사용자 수동 스키마 보정(HITL) 입력 화면 구현.
+*   **주니어 C (데이터):** 연속지적도(SHP) 국공유지 PNU 코드 분류 및 GeoPandas 좌표 투영(`EPSG:4326`).
+*   **주니어 D (백엔드):** 파일 일괄 업로드 API 구현, FastAPI 내 데이터셋 임시 스토리지 처리 및 DB direct 적재 개발.
+*   **주니어 E (AI):** AI 감리 엔진 프롬프트 구현(결함 데이터셋 자동 식별 및 보정 피드백).
+*   **주니어 F (산출물):** 데이터 정합성 지수 시각화 차트(Chart.js) 연동.
+*   **주니어 G (DevOps):** AWS EKS 상에 통합 FastAPI 및 PostgreSQL/PostGIS 개발용 파드(Pods) 배포.
 
-### 3주차: GIS 공간 분석 엔진 (Spatial Engine) 구축
-*   **주니어 A (지도):** 지도에서 마우스 클릭 시 해당 지점의 위경도 좌표를 추출하여 API로 던지는 핀 마커 모듈 구현.
-*   **주니어 B (UI):** AHP 가중치 가변 슬라이더 폼 UI 개발 및 입력값 REST API 전송 모듈 구현.
-*   **주니어 C (데이터):** PostGIS의 `ST_Buffer` 및 `ST_Difference`를 가동하여 금연구역 배제 버퍼 폴리곤 자동화 SQL 쿼리 작성.
-*   **주니어 D (백엔드):** 지적도 국공유지 필지와 금연구역 버퍼를 비교 차집합 연산하여 실시간으로 설치 가능 폴리곤 영역을 반환하는 GIS 공간 연산 API 완성.
-*   **주니어 E (AI):** 조례 RAG의 다중 자치구 분기 로직(선택한 자치구 조례 폴더 매핑) 구현.
-*   **주니어 F (산출물):** WeasyPrint 파이썬 PDF 변환 모듈을 FastAPI 서버와 연동하여 HTML을 PDF 파일로 렌더링하는 API 구축.
-*   **주니어 G (DevOps):** PostGIS 공간 쿼리 병목 지점 체크 및 DB 인덱스(`GIST`) 튜닝 QA.
+### 3주차: AHP 가중치 가변 연산 및 최종 부지 도출 (AHP Engine)
+*   **주니어 A (지도):** GIS 공간 분석 레이아웃 핀 마커 및 10m/200m 규제 배제 마스크 시각화.
+*   **주니어 B (UI):** AHP 가중치 슬라이더 모듈 구현 및 Next.js BFF API 라우트를 통한 가중치 데이터 전송 연동.
+*   **주니어 C (데이터):** PostGIS `ST_Buffer` 및 `ST_Difference` 차집합 공간 연산 쿼리 튜닝.
+*   **주니어 D (백엔드):** AHP 일관성 비율(C.R. < 0.1) 수학적 검증 로직 및 `ahp_models` DB 저장 락(Lock) 구현.
+*   **주니어 E (AI):** 가중치 프로파일별 입지 인자 우선순위 판정 에이전트 연동.
+*   **주니어 F (산출물):** WeasyPrint 백엔드 PDF 변환 라우터 및 다운로드 컨트롤러 구현.
+*   **주니어 G (DevOps):** PostGIS 차집합 연산 병목 검정 및 공간 인덱스(`GIST`) 최적화.
 
-### 4주차: 입지 추천 알고리즘 (AHP/MCLP) 튜닝
-*   **주니어 A (지도):** 백엔드에서 반환된 최적 후보지 TOP 3 공간 좌표(Polygon 및 Point)를 지도 위에 렌더링.
-*   **주니어 B (UI):** 추천 완료 후, 최종 점수 산출 가중치(유동인구, 민원, 안전성)를 시각화할 XAI 차트 모달창 연동.
-*   **주니어 C (데이터):** 버스/지하철 노드 유동인구 통계와 상가 밀집도, 담배꽁초 무단투기 데이터를 중첩 연산하는 가중치 산출 수식 보정.
-*   **주니어 D (백엔드):** 사용자가 웹에서 보낸 가중치 슬라이더 변수값에 따라 실시간으로 AHP 점수를 재계산해 주는 최적 입지 추천 API 완성.
-*   **주니어 E (AI):** 3인 에이전트가 찬반 토론을 마친 뒤, 합의된 최종 정책 제언 텍스트를 출력하는 LangGraph 루프 완성.
-*   **주니어 F (산출물):** 최종 추천 결과 및 AI 토론 텍스트를 HTML 보고서 템플릿의 변수에 동적으로 바인딩하는 진화 코드 완성.
-*   **주니어 G (DevOps):** 1단계~4단계 백엔드 API 통합 성능 테스트 및 병목 지점 QA.
+### 4주차: 지역 갈등 민감도 벡터 연동 및 페르소나 AI 3대 시나리오 예측 모델 통합
+*   **주니어 A (지도):** 선정 후보지 TOP 3에 매핑된 실시간 페르소나 토론 말풍선 핀 렌더링.
+*   **주니어 B (UI):** 토론 과정을 보여주는 실시간 SSE(Server-Sent Events) 스트리밍 UI 컴포넌트 개발.
+*   **주니어 C (데이터):** 후보지 인근 주거 밀도, 민원 핫스팟 및 아동 비율 연계 데이터 보정 수식 검출.
+*   **주니어 D (백엔드):** AHP 기반 Top 1~3 부지 디렉토리/탭 구조 데이터 모델 구축. Top 2, 3 부지에 대한 온디맨드 시뮬레이션 트리거 API 설계.
+*   **주니어 E (AI):** 민원/인구 기반 **'지역 갈등 민감도 벡터'** 산출 로직 구현. RAG 조례 데이터에 기반한 찬성-반대-정부 페르소나의 독립적 3대 예측 시나리오(일반/우호/불합의) 및 확률 통계(Confidence Score) 연산 프롬프트 완성 (GPT-4o 강제 적용).
+*   **주니어 F (산출물):** 3대 시나리오 리포트를 행정 양식 HTML 문서에 동적 바인딩하는 제어기 구현.
+*   **주니어 G (DevOps):** AWS EKS Cluster Auto Scaler 연동 및 LangGraph AI 토론 부하 테스트.
 
-### 5주차: LangGraph Multi-Agent 시뮬레이션 고도화
-*   **주니어 A (지도):** 가상의 에이전트들이 실시간으로 의견을 주고받는 말풍선 UI를 지도 후보지 핀 옆에 팝업 형태로 시각화.
-*   **주니어 B (UI):** 실시간 대화 스트리밍창 퍼블리싱 및 WebSocket/SSE 데이터 수신 인터페이스 연동.
-*   **주니어 C (데이터):** 자치구별 민원 통계와 꽁초 상습 투기 지점에 대한 거리 가중치 데이터 연계 보정.
-*   **주니어 D (백엔드):** LangGraph 에이전트 토론 과정을 프론트엔드로 실시간 푸시하는 SSE(Server-Sent Events) API 구축.
-*   **주니어 E (AI):** 에이전트별 찬반 태도 가이드라인(보건관: 규제 엄격, 상인대표: 편의성 중시 등) 프롬프트 고도화 및 GPT-4o-mini 성능 최적화.
-*   **주니어 F (산출물):** PDF 변환 시 한글 폰트 깨짐 방지를 위한 Noto Sans CJK 웹폰트 정적 파일 연동 및 CSS 인쇄 매체 속성 조율.
-*   **주니어 G (DevOps):** OpenAI API 호출 실패 시 재시도(Retry) 및 Fallback 예외 처리 아키텍처 검증.
+### 5주차: 대시보드 리스트 및 Audit AI 자동 검증 파이프라인 구축 (Feedback Loop)
+*   **주니어 A (지도):** 사후 결과 매핑이 완료된 부지의 핀 색상을 적격(초록), 불합의(빨강)로 동적 변환 시각화.
+*   **주니어 B (UI):** Next.js 대시보드 내 `[의사결정 대기 리스트]` 페이지 및 종결 공문 PDF 드래그앤드롭 업로드 창 개발.
+*   **주니어 C (데이터):** RAG 내의 독립적인 `[AI 기반 실제사례]` 저장용 공간 DB 격리 스키마 정의.
+*   **주니어 D (백엔드):** Audit AI 검사 라우터 구현 및 실제 결과 대조를 위한 DB CRUD API 작성.
+*   **주니어 E (AI):** 업로드된 행정 공문 PDF를 OCR 파싱하여 실제 결과를 자동 팩트체크하고, 기존 시나리오 A~C 매핑 여부를 분류 판정하는 **Audit AI (검토 에이전트)** 파이프라인 개발 (할루시네이션 오분류 100% 필터링).
+*   **주니어 F (산출물):** WeasyPrint 보고서 템플릿에 검증 완료 실적 마일스톤 PDF 인쇄 기능 추가.
+*   **주니어 G (DevOps):** AWS KMS 및 IAM Role(IRSA) 연동을 통한 공문서 데이터 보안 격리(Multi-Tenancy) 하드닝.
 
-### 6주차: 컴포넌트 통합 및 연계 테스트
-*   **주니어 A/B (프론트):** 지도 핀 마커 클릭 ➔ 후보지 상세 정보 ➔ AI 토론 모달 ➔ PDF 보고서 출력으로 이어지는 전체 UI 흐름 매끄럽게 연결.
-*   **주니어 C/D (데이터/백엔드):** 다중 자치구(용산, 노원 등) 신규 등록 시, 자치구 ID 격리 데이터 주입 및 독립 분석 작동 여부 최종 확인.
-*   **주니어 E/F (AI/보고서):** 조례 RAG 기반 AI 심의 의견 전문이 PDF 보고서 상에 단락 깨짐 없이 미려하게 인쇄되는지 렌더링 정밀 튜닝.
-*   **주니어 G (DevOps):** 통합 환경에서의 엔드투엔드(E2E) 자동화 통합 테스트 시나리오 작성 및 QA.
-
-### 7주차: 실운영 배포 및 QA 디버깅
+### 6주차~8주차: 통합 연계 테스트, QA, Nginx 배포 및 데모 촬영
 *   **주니어 A~G 전원:**
-    - 통합 시나리오 테스트(로그인 ➔ 신규 자치구 등록 ➔ 파일 10종 업로드 ➔ 용산구 아현동/한강로동 입지 연산 ➔ 찬반 토론 ➔ PDF 보고서 출력) QA 가동.
-    - 주니어 G의 주도 하에 Docker Compose 프로덕션 환경용 리버스 프록시(Nginx) 세팅 및 컨테이너 보안 하드닝 적용.
-    - 발견된 에이전트 환각 현상(Hallucination) 및 GIS 연산 오차 디버깅.
-
-### 8주차: 데모 촬영 및 프로젝트 최종 완료
-*   **주니어 A~G 전원:**
-    - AWS 또는 지자체 실서버 임시 인프라 가동 데모 서버 배포 완료.
-    - 실제 구동 과정을 담은 시연 비디오 촬영 및 마일스톤 산출물 최종 서명.
-    - 최종 R&D 발표 자료 작성 및 발표 예행연습.
+    - 데이터셋 일괄 업로드 ➔ AI 감리 및 HITL ➔ AHP 가중치 잠금 ➔ 최종 부지 도출 ➔ 3대 시나리오 스트리밍 ➔ PDF 다운로드 ➔ 사후 Audit AI 매핑 등록으로 이어지는 E2E 통합 시나리오 테스트.
+    - AWS EKS Nginx Ingress Controller 연동 및 HTTPS(SSL) 인증서 발급 보안 하드닝 적용 후 R&D 발표 시연.
 
 ---
 
 ## 2. 전체 시스템 파이프라인 및 아키텍처 설계도 (System Architecture)
 
+```
+[공무원: 데이터셋 일괄 업로드] ➔ [FastAPI Monolith Backend] 
+                                          │
+                                          ▼ (PostgreSQL/PostGIS 연산)
+[공무원: PDF 보고서 다운로드] ⬅ [FastAPI: SSE 실시간 스트리밍] ⬅ [FastAPI: AI 감리 및 HITL 조정]
+            ▼ (사후 행정 완료 시)                        │
+[공무원: 최종 공문서 PDF 업로드] ➔ [Audit AI: 실증 팩트 검토] ➔ [RAG: 'AI기반 실제사례' 세그먼트 적재]
+```
+
 ```mermaid
 sequenceDiagram
     autonumber
     actor Admin as 공무원/관리자
-    participant UI as Web Frontend (React + Mapbox)
-    participant API as FastAPI Backend Server
+    participant UI as Next.js Web Frontend
+    participant API as FastAPI (Unified Monolith Backend)
     participant DB as PostgreSQL + PostGIS Database
     participant AI as LangGraph (Multi-Agent RAG)
     participant PDF as WeasyPrint (PDF Engine)
 
-    Admin->>UI: 1. 자치구 등록 및 데이터셋 파일 업로드 (CSV/SHP/TXT)
-    UI->>API: 2. 개별 파일 업로드 요청 (Multipart/form-data)
-    Note over API: API 내 Geocoding & CRS 투영 변환 가동 (EPSG:4326)
-    API->>DB: 3. 변환된 공간 데이터 및 요약 통계 적재 (to_sql)
-    DB-->>API: 4. 적재 완료 피드백 (GIST 인덱스 활성화)
-    API-->>UI: 5. 대시보드 신호등 🟢적재완료 갱신
-    Admin->>UI: 6. 입지 추천 가중치 설정 및 가동 요청
-    UI->>API: 7. 최적 입지 추천 연산 요청 (AHP 가중치 파라미터 전달)
-    API->>DB: 8. ST_Buffer & ST_Difference 공간 조인 차집합 쿼리 가동
-    DB-->>API: 9. 국공유지 기반 최적 후보 필지 정보 반환
-    API->>AI: 10. AI 정책 심의 요청 (후보지 위경도 & 조례 전달)
-    Note over AI: LangGraph 기반 3자 페르소나 토론 및 조례 RAG 조회
-    AI-->>UI: 11. WebSocket/SSE 실시간 토론 대화 스트리밍 푸시
-    AI-->>API: 12. 합의된 최종 심의 의견서 반환
-    API->>PDF: 13. HTML 템플릿 변수 바인딩 및 PDF 렌더링 요청
-    PDF-->>API: 14. 바이너리 PDF 파일 생성 완료
-    API-->>UI: 15. 최종 입지선정 타당성 검증 보고서 다운로드 제공
-    UI-->>Admin: 16. 지도상 TOP 3 시각화 & PDF 다운로드 완료
+    Admin->>UI: 1. 다목적 데이터셋 및 조례 파일 일괄 업로드
+    UI->>API: 2. 업로드 요청 전송 (Multipart/form-data)
+    API->>AI: 3. AI 데이터 감리 가동 (결함/정밀도 검토)
+    AI-->>UI: 4. 감리 결과 리포팅 (정합성 통과 여부 및 보정점 피드백)
+    Admin->>UI: 5. 수동 스키마 보정 및 최종 승인 (HITL 승인)
+    UI->>API: 6. 최종 업로드 확정 전송
+    API->>DB: 7. PostGIS 공간 인덱스(GIST) 활성화 적재
+    Admin->>UI: 8. AHP 가중치 슬라이더 설정 및 입지 추천 요청
+    UI->>API: 9. 추천 연산 요청 (AHP 가중치 파라미터 전달)
+    API->>API: 10. AHP C.R. < 0.1 검증 및 ahp_models DB 락(Lock) 저장
+    API->>DB: 11. ST_Difference 공간 조인 차집합 쿼리 가동
+    DB-->>API: 12. 국공유지 기반 최적 후보지 정보 반환
+    API->>API: 13. 민원/인구 기반 '지역 갈등 민감도 벡터' 자동 산출
+    API-->>UI: 14. 최종 TOP 3 후보지 및 민감도 벡터 전달 (화면 표시)
+    Admin->>UI: 15. Top 1 상세 보기 진입 (시뮬레이션 자동 트리거)
+    UI->>API: 16. 시뮬레이션 요청 (민감도 벡터 전달)
+    Note over API: 외부 선례 개입 배제 및 RAG 법규 기반 순수 추론 토론 (GPT-4o 강제)
+    API-->>UI: 17. SSE(Server-Sent Events) 3대 시나리오 예측 스트리밍 (일반/우호/불합의)
+    API->>PDF: 18. HTML WeasyPrint 변수 바인딩 및 PDF 변환
+    PDF-->>API: 19. 최종 입지선정 타당성 보고서 생성
+    API-->>UI: 20. 보고서 다운로드 및 지도 TOP 3 시각화 완료
+
+    Note over Admin, DB: [선택적 피드백 루프: 실제 행정 종결 시]
+    Admin->>UI: 21. 실제 결과 적용 버튼 클릭 및 종결 공문(PDF) 업로드
+    UI->>API: 22. Audit AI 검토 요청 전송
+    API->>AI: 23. Audit AI(검토 에이전트) 가동 (OCR 및 팩트 추출)
+    Note over API: 할루시네이션 오칭 검증 후 기존 시나리오 A~C 매핑 판정
+    API->>DB: 24. RAG 'AI 기반 실제사례' 세그먼트에 보관
+    API-->>UI: 25. 매핑 완료 알림 및 조회 크레딧 자동 충전
 ```
 
 ---
@@ -243,3 +250,4 @@ CREATE TABLE cigarette_dumping_zones (
     geom GEOMETRY(Point, 4326) NOT NULL
 );
 CREATE INDEX idx_dumping_geom ON cigarette_dumping_zones USING GIST(geom);
+```
