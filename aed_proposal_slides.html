@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스마트 AED 응급구호 부스 제안서</title>
+    <!-- 고급 타이포그래피를 위한 Google Fonts 연동 -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 프리미엄 디자인 토큰 & 초기화 */
+        :root {
+            --bg-color: #080B11;
+            --card-bg: rgba(21, 29, 48, 0.6);
+            --card-border: rgba(0, 210, 255, 0.15);
+            --primary: #00D2FF;
+            --secondary: #00F5D4;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --glow: 0 0 20px rgba(0, 210, 255, 0.3);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* 배경 우주 성운 장식 */
+        .bg-glow-1 {
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.08) 0%, rgba(8, 11, 17, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .bg-glow-2 {
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(0, 245, 212, 0.06) 0%, rgba(8, 11, 17, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 슬라이드 컨테이너 */
+        .slides-container {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        /* 개별 슬라이드 공통 스타일 */
+        .slide {
+            position: absolute;
+            width: 90%;
+            max-width: 1200px;
+            height: 75vh;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 60px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            pointer-events: none;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* 슬라이드 헤더 */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 20px;
+        }
+
+        .slide-title-area h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .slide-subtitle {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        .slide-index {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--secondary);
+            font-family: 'Outfit', sans-serif;
+            text-shadow: var(--glow);
+        }
+
+        /* 슬라이드 바디 */
+        .slide-body {
+            flex-grow: 1;
+            margin-top: 40px;
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        /* Grid 레이아웃 카트 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 28px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            background: rgba(0, 210, 255, 0.05);
+            border-color: rgba(0, 210, 255, 0.3);
+            box-shadow: var(--glow);
+        }
+
+        .card-tag {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--secondary);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #FFFFFF;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* 1번 슬라이드 (표지) 특화 디자인 */
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(21, 29, 48, 0.8) 0%, rgba(8, 11, 17, 0.9) 100%);
+        }
+
+        .title-badge {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--primary);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 30px;
+            text-shadow: var(--glow);
+            box-shadow: inset 0 0 10px rgba(0, 210, 255, 0.2);
+        }
+
+        .main-title {
+            font-size: 3.8rem;
+            font-weight: 900;
+            line-height: 1.25;
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #FFFFFF 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .sub-title {
+            font-size: 1.6rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            margin-bottom: 50px;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 30px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 30px;
+            width: 80%;
+            justify-content: center;
+        }
+
+        /* 슬라이드 5 (WBS) 특화 스타일 */
+        .wbs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            width: 100%;
+        }
+
+        .wbs-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .wbs-card:hover {
+            transform: scale(1.03);
+            border-color: var(--secondary);
+            box-shadow: 0 0 15px rgba(0, 245, 212, 0.15);
+        }
+
+        .wbs-role {
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .wbs-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        /* 하단 컨트롤 바 */
+        .footer-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 60px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(8, 11, 17, 0.85);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-dots {
+            display: flex;
+            gap: 12px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+            box-shadow: var(--glow);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            transition: var(--transition);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: var(--bg-color);
+            border-color: var(--primary);
+            box-shadow: var(--glow);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: transparent;
+            color: var(--text-muted);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <!-- 슬라이드 영역 -->
+    <div class="slides-container">
+
+        <!-- Slide 1: 표지 -->
+        <div class="slide title-slide active" id="slide-1">
+            <div class="title-badge">PROPOSAL FOR OMNISITE</div>
+            <h1 class="main-title">골든타임 4분 확보를 위한<br>'24시간 스마트 AED 응급구호 부스'</h1>
+            <p class="sub-title">KT 공중전화 유휴 부스를 스마트 헬스케어 공익 거점으로 업사이클링</p>
+            <div class="meta-info">
+                <span><strong>제안자:</strong> 장천명 (4조 조장)</span>
+                <span><strong>플랫폼:</strong> OmniSite (다목적 공간의사결정지원시스템)</span>
+                <span><strong>타겟 부서:</strong> 지자체 보건소 & KT 링커스</span>
+            </div>
+        </div>
+
+        <!-- Slide 2: 문제 정의 -->
+        <div class="slide" id="slide-2">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>01. 왜 스마트 AED 부스인가?</h2>
+                    <p class="slide-subtitle">야간/공휴일에 이용 불가능했던 기존 AED의 사각지대 및 예산 낭비 해소</p>
+                </div>
+                <div class="slide-index">02 / 05</div>
+            </div>
+            <div class="slide-body">
+                <div class="grid-container">
+                    <div class="card">
+                        <div class="card-tag">Critical Pain Point</div>
+                        <h3>야간/공휴일 접근성 0%</h3>
+                        <p>현재 보급된 AED의 대부분은 <span class="highlight">관공서, 아파트 관리사무소, 은행 지점 내부</span>에 설치되어 있어, 야간이나 휴일 영업 외 시간 대에는 문이 잠겨 응급 구조 시 사용이 불가능합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">KT Assets Upcycling</div>
+                        <h3>KT 28,000대 유휴 자산</h3>
+                        <p>스마트폰 보급으로 철거 적자를 겪고 있으나 법적 의무 유지 조항 때문에 거리에 흉물로 방치된 <span class="highlight">KT 공중전화 부스를 24시간 실외 노출형 AED 부스</span>로 업사이클링합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">Cost Efficiency</div>
+                        <h3>토목/점용료 예산 0원</h3>
+                        <p>이미 전력선 인입과 도로점용 허가(도로법 제61조)가 끝난 KT 부스를 리모델링하므로, 지자체의 신규 토목 공사비와 행정 기간을 극적으로 절감합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: 보건소 도입 당위성 -->
+        <div class="slide" id="slide-3">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>02. 보건소(보건복지부) 도입의 절대적 필요성 & 당위성</h2>
+                    <p class="slide-subtitle">다부서 협의 대면 병목 해결, 법적 분쟁 예산 매몰 100% 차단, 투명한 AHP Lock 의사결정</p>
+                </div>
+                <div class="slide-index">03 / 05</div>
+            </div>
+            <div class="slide-body">
+                <div class="grid-container">
+                    <div class="card">
+                        <div class="card-tag">Admin Efficiency 96%</div>
+                        <h3>B2G 의사결정 기간 30일 ➔ 1일 단축</h3>
+                        <p>도로과(도로점용), 건축과(가설건축물), 소방서(소방로), 주민대표와의 다부서 대면 협의 및 문서 승인 병목을 시스템 상에서 원클릭 행정 공문서 규격 PDF로 자동 컴파일해 <span class="highlight">의사결정 시간을 96.7% 단축</span>시킵니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">CAPEX Risk Zero</div>
+                        <h3>위법 시공에 따른 세금 매몰 100% 차단</h3>
+                        <p>설치 후 기존 AED와의 100m 중복 설치 감사 지적, 소방법 위반, 장애인 보행권 침해 소송으로 개당 <span class="highlight">1,500만 원 상당의 스마트 부스가 강제 철거/이전</span>당하는 예산 낭비 리스크를 1차 공간 필터(GIST)를 통해 선제 차단합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">Public Rationale Lock</div>
+                        <h3>특혜/조작 시비 없는 투명한 의사결정</h3>
+                        <p>자의적인 가중치 조작(게리맨더링)을 배제하기 위해 수학적 일관성 검증을 통과한 가중치만 저장(<span class="highlight">AHP Lock</span>)하고, 지자체의 실제 보건 조례 RAG를 대조한 AI 심의 합의서를 백데이터로 영구 적재해 행정 정당성을 입증합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: 비즈니스 모델 -->
+        <div class="slide" id="slide-4">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>03. KT 그룹사 비즈니스 시너지 & 매출 모델 (B2G/B2B)</h2>
+                    <p class="slide-subtitle">KT 통신 데이터 판매, KT Cloud 락인, KT링커스 디지털 광고 수익 쉐어 모델</p>
+                </div>
+                <div class="slide-index">04 / 05</div>
+            </div>
+            <div class="slide-body">
+                <div class="grid-container">
+                    <div class="card">
+                        <div class="card-tag">KT B2G ARR Revenue</div>
+                        <h3>KT 직접 고정 반복 매출 (ARR)</h3>
+                        <p>지자체 보건소가 플랫폼을 도입함에 따라 분석 신뢰성을 위해 <span class="highlight">KT 생활인구 API 연간 라이선스료</span>를 매년 KT에 지불하며, 스마트 부스마다 원격 관제 및 안심벨 가동을 위한 <span class="highlight">KT IoT 전용망 회선 요금</span>을 보건소가 최소 5~10년간 유지하게 함으로써 통신 매출을 확보합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">KT Cloud & AICT lock-in</div>
+                        <h3>KT 공공 Cloud 및 AI 기술 락인</h3>
+                        <p>지적도 및 민원을 다루는 공공 성격상 보안성 심의 통과가 필수적이므로 본 플랫폼 API 및 공간 DB를 <span class="highlight">KT Cloud 공공 Zone 배포</span>를 기본 규격으로 고정합니다. 또한 RAG 심의 시 정보 외부 유출을 원천 방어하기 위해 <span class="highlight">KT의 한국어 특화 sLLM '믿음(Mi:dm)'</span>을 로컬 서빙하여 기술 락인을 구축합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">KT Linkers DOOH Ads</div>
+                        <h3>KT링커스 옥외광고(DOOH) 전환</h3>
+                        <p>초기 시공비는 지자체 예산과 KT링커스 개선 펀드를 매칭하고, 부스 전면에 <span class="highlight">KT Digico 디지털 사이니지</span>를 결합합니다. 낮에는 보건 공익 광고를 송출해 지반 점용료를 면제받고, 출퇴근 시간대에는 B2B 상권 유료 광고를 유치해 18개월 내 초기 투자비를 전액 회수 및 광고 수익을 쉐어합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: 실증 테스트 연동 데이터셋 구성안 -->
+        <div class="slide" id="slide-5">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>04. 실증 테스트 연동 데이터셋 구성안</h2>
+                    <p class="slide-subtitle">지자체 공공 데이터셋 CSV 파일 업로드를 통한 2차 PoC 공간 검증 연산</p>
+                </div>
+                <div class="slide-index">05 / 05</div>
+            </div>
+            <div class="slide-body" style="flex-direction: column; justify-content: center; gap: 20px;">
+                <div class="wbs-grid">
+                    <div class="wbs-card">
+                        <div class="wbs-role">[후보지 데이터]</div>
+                        <div class="wbs-name">서울시 공중전화 위치정보</div>
+                        <p>서울 열린데이터광장의 CSV를 활용하여 관내에 실존하는 KT 공중전화 부스의 위경도 좌표를 추출해 후보 입지 모수로 적재합니다.</p>
+                    </div>
+                    <div class="wbs-card">
+                        <div class="wbs-role">[중복배제 데이터]</div>
+                        <div class="wbs-name">전국 자동심장충격기(AED) 표준데이터</div>
+                        <p>기존 AED 위치와 <span class="highlight">야간/공휴일 개방여부</span> 필터를 매핑하여, 이미 야간 개방형 AED가 인접(100m)한 부스는 탈락시킵니다.</p>
+                    </div>
+                    <div class="wbs-card">
+                        <div class="wbs-role">[응급수요 데이터]</div>
+                        <div class="wbs-name">서울시 야간 생활인구 & 고령인구 통계</div>
+                        <p>심정지 고위험 시간대인 <span class="highlight">야간(22시~06시) 생활인구 밀집도</span>와 행정동별 노인 인구 분포 데이터를 결합해 AHP 가중합 점수화에 연동합니다.</p>
+                    </div>
+                    <div class="wbs-card">
+                        <div class="wbs-role">[시공규제 데이터]</div>
+                        <div class="wbs-name">연속지적도 및 소방망 정보</div>
+                        <p>국가공간정보포털 지적도에서 지목이 <span class="highlight">도로(도)/공터</span>이며, 구급차 진입을 위한 소방로 도로폭 5m 이상 필지만 선별합니다.</p>
+                    </div>
+                </div>
+                <div class="wbs-grid">
+                    <div class="wbs-card" style="grid-column: span 4; background: rgba(0, 210, 255, 0.03); border-color: rgba(0, 210, 255, 0.25);">
+                        <div class="wbs-role" style="color: var(--primary);">[행정 실무 시나리오 & 4단계 유저 플로우]</div>
+                        <div class="wbs-name" style="color: var(--text-main); font-weight: 300;">"보건소 주무관이 수집된 CSV 파일을 업로드하여 최종 행정 결재 보고서를 인쇄하기까지의 여정"</div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-top: 5px;">
+                            <span class="highlight">① CSV 파일 업로드:</span> 공무원이 KT 공중전화 및 AED 리스트 CSV를 브라우저에 드래그하여 업로드 ➔ AI 감리 에이전트 무결성 정제<br>
+                            <span class="highlight">② AHP 중요도 입력:</span> 야간 생활인구 및 심질환 인구수 가중치 입력 ➔ 일관성 비율(C.R. &lt; 0.1) 자가 검증 통과 후 DB 저장 및 잠금<br>
+                            <span class="highlight">③ 공간 배제 및 모의 심의:</span> 기존 야간개방 AED 100m 버퍼 오려내기 및 5m 이상 보도 필터링 ➔ 조례 RAG 기반 3자 AI의 주민 합의서 자동 작성<br>
+                            <span class="highlight">④ 결재 문서 출력:</span> 가설건축물 신고 요건 자가진단 및 예상 도로점용료 산출식이 연동된 공문서 규격의 타당성 PDF 즉시 다운로드
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 하단 네비게이션 컨트롤 -->
+    <div class="footer-controls">
+        <div class="btn-group">
+            <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled>PREV</button>
+        </div>
+        <div class="nav-dots" id="dots-container">
+            <!-- JS에서 동적 생성 -->
+        </div>
+        <div class="btn-group">
+            <button class="nav-btn" id="next-btn" onclick="nextSlide()">NEXT</button>
+        </div>
+    </div>
+
+    <!-- 슬라이드 컨트롤 스크립트 -->
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 5;
+
+        // 동적으로 닷 네비게이션 생성
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 1; i <= totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (i === 1) dot.classList.add('active');
+            dot.setAttribute('onclick', `goToSlide(${i})`);
+            dot.id = `dot-${i}`;
+            dotsContainer.appendChild(dot);
+        }
+
+        function updateSlideUI() {
+            // 모든 슬라이드 활성화 클래스 제거
+            for (let i = 1; i <= totalSlides; i++) {
+                document.getElementById(`slide-${i}`).classList.remove('active');
+                document.getElementById(`dot-${i}`).classList.remove('active');
+            }
+
+            // 현재 슬라이드 활성화
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+            document.getElementById(`dot-${currentSlide}`).classList.add('active');
+
+            // 이전/다음 버튼 비활성화 분기
+            document.getElementById('prev-btn').disabled = (currentSlide === 1);
+            document.getElementById('next-btn').disabled = (currentSlide === totalSlides);
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlideUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlideUI();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            currentSlide = slideNum;
+            updateSlideUI();
+        }
+
+        // 키보드 방향키 조작 이벤트 리스너 추가
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>

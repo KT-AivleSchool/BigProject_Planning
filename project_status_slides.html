@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KT-Aivle BigProject: OmniSite 진행 현황 브리핑</title>
+    <!-- 고급 타이포그래피를 위한 Google Fonts 연동 -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 프리미엄 디자인 토큰 & 초기화 */
+        :root {
+            --bg-color: #06090F;
+            --card-bg: rgba(18, 25, 41, 0.7);
+            --card-border: rgba(0, 210, 255, 0.15);
+            --primary: #00D2FF;
+            --secondary: #00F5D4;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --glow: 0 0 20px rgba(0, 210, 255, 0.25);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* 배경 우주 성운 장식 */
+        .bg-glow-1 {
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.08) 0%, rgba(6, 9, 15, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .bg-glow-2 {
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(0, 245, 212, 0.06) 0%, rgba(6, 9, 15, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 슬라이드 컨테이너 */
+        .slides-container {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        /* 개별 슬라이드 공통 스타일 */
+        .slide {
+            position: absolute;
+            width: 92%;
+            max-width: 1250px;
+            height: 78vh;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 50px 60px;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            opacity: 0;
+            transform: scale(0.96) translateY(15px);
+            pointer-events: none;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* 슬라이드 헤더 */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 18px;
+        }
+
+        .slide-title-area h2 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .slide-subtitle {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        .slide-index {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--secondary);
+            font-family: 'Outfit', sans-serif;
+            text-shadow: var(--glow);
+        }
+
+        /* 슬라이드 바디 */
+        .slide-body {
+            flex-grow: 1;
+            margin-top: 30px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        /* Grid 레이아웃 카트 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 210, 255, 0.04);
+            border-color: rgba(0, 210, 255, 0.25);
+            box-shadow: var(--glow);
+        }
+
+        .card-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--secondary);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* 1번 슬라이드 (표지) 특화 디자인 */
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(18, 25, 41, 0.8) 0%, rgba(6, 9, 15, 0.95) 100%);
+        }
+
+        .title-badge {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--primary);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 25px;
+            text-shadow: var(--glow);
+            box-shadow: inset 0 0 10px rgba(0, 210, 255, 0.2);
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.25;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #FFFFFF 40%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .sub-title {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            margin-bottom: 45px;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 40px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 25px;
+            width: 75%;
+            justify-content: center;
+        }
+
+        /* 상세 테이블용 그리드 */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            width: 100%;
+        }
+
+        .spec-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .spec-card h4 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .spec-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .spec-card li {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 12px;
+        }
+
+        .spec-card li::before {
+            content: "•";
+            color: var(--secondary);
+            position: absolute;
+            left: 0;
+        }
+
+        /* 하단 컨트롤 바 */
+        .footer-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 60px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(6, 9, 15, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-dots {
+            display: flex;
+            gap: 12px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+            box-shadow: var(--glow);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 10px 22px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            transition: var(--transition);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: var(--bg-color);
+            border-color: var(--primary);
+            box-shadow: var(--glow);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: transparent;
+            color: var(--text-muted);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <!-- 슬라이드 영역 -->
+    <div class="slides-container">
+
+        <!-- Slide 1: 표지 -->
+        <div class="slide title-slide active" id="slide-1">
+            <div class="title-badge">PROJECT STATUS BRIEFING</div>
+            <h1 class="main-title">OmniSite 플랫폼 개발 진행 현황</h1>
+            <p class="sub-title">다목적 스마트시티 공간 의사결정지원시스템 구축 현황 보고</p>
+            <div class="meta-info">
+                <span><strong>발표자:</strong> 장천명 (4조 발표 대표)</span>
+                <span><strong>스프린트 단계:</strong> 2주차 DB 설계 개시 전 킥오프</span>
+                <span><strong>과제 범위:</strong> 보건소 스마트 보건복지/헬스케어 인프라</span>
+            </div>
+        </div>
+
+        <!-- Slide 2: 코칭 피드백 반영 사항 -->
+        <div class="slide" id="slide-2">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>01. 2차 코칭 피드백 완벽 수렴 및 기획 동기화</h2>
+                    <p class="slide-subtitle">보건복지/보건소 소관 모듈식 예시 확장 및 XAI/정밀 실증 구현</p>
+                </div>
+                <div class="slide-index">02 / 05</div>
+            </div>
+            <div class="slide-body">
+                <div class="grid-container">
+                    <div class="card">
+                        <div class="card-tag">Vision Expansion</div>
+                        <h3>보건복지/보건소 소관 일원화</h3>
+                        <p>칸막이 행정 저항을 극복하기 위해 <span class="highlight">지자체 보건소 단일 발주 부서</span> 소관 인프라로 비전을 수렴했습니다.<br>• MVP: 스마트 흡연부스<br>• 확장 1: 폭염/한파 실버 스마트 쉼터<br>• 확장 2: 24시간 실외 AED 헬스케어 부스</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">Ground Truth Data</div>
+                        <h3>E1 불법흡연 민원데이터 연동</h3>
+                        <p>단순 상수상권 핫스팟이 아닌, 실제 구민들이 실시간으로 제기한 <span class="highlight">용산구 관내 실제 불법 흡연 민원 데이터(E1)</span>를 그라운드 트루스로 적용하여 입지 예측 알고리즘의 정량적 신뢰도를 보증합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">Aesthetics & Terminology</div>
+                        <h3>임원/문과용 기술 용어 정비</h3>
+                        <p>비전공 의사결정권자들을 위해 <span class="highlight">공간 차집합 필터(컴퓨터가 법적 금역을 도려내는 기술)</span> 및 <span class="highlight">멀티에이전트 토론(AI 간의 모의 조례 합의)</span>과 같이 용어를 알기 쉽게 순화했습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: R&D 기획 문서 동기화 현황 -->
+        <div class="slide" id="slide-3">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>02. 10대 R&D 명세 및 기획 정합 완료</h2>
+                    <p class="slide-subtitle">프로젝트 루트 디렉토리 이동 및 상호 논리적 정합성 패치 완료</p>
+                </div>
+                <div class="slide-index">03 / 05</div>
+            </div>
+            <div class="slide-body">
+                <div class="spec-grid">
+                    <div class="spec-card">
+                        <h4>설계/시스템 진단서</h4>
+                        <ul>
+                            <li><strong>레이턴시 보고서:</strong> PostGIS GIST 인덱싱을 통한 0.5초 내 연산 보증 및 FastAPI SSE를 통한 AI 토론 0.1초 체감 렌더링.</li>
+                            <li><strong>최종 기술명세서:</strong> 13종 테이블 물리 설계 DDL 및 데이터 파이프라인 시퀀스 다이어그램 확정.</li>
+                        </ul>
+                    </div>
+                    <div class="spec-card">
+                        <h4>입지 예측 & 타당성</h4>
+                        <ul>
+                            <li><strong>3대 입지 예측서:</strong> 신용산역 3번출구 등 10m 규제 위배 후보지 탈락 검증 및 실제 합법 TOP 3 입지 도출.</li>
+                            <li><strong>학술/특허 타당성:</strong> 건축법 가설건축물 신고, 도로법 도로점용, 보도 잔여폭 1.2m 검증식 포함 BM 특허 청구항 설계 완료.</li>
+                        </ul>
+                    </div>
+                    <div class="spec-card">
+                        <h4>비용 & 물리 규격</h4>
+                        <ul>
+                            <li><strong>비용 진단서:</strong> AI 감리 및 LangGraph RAG 토론 1회 시뮬레이션 당 GPT-4o-mini 기준 5.79원 소모 분석 완료.</li>
+                            <li><strong>규격 검토서:</strong> 3m x 2m 10인 부스 설치 및 소방로 3m 유효폭 확보(도로폭 5m 이상 필지) 강제화에 따른 최종 top3 적격지 갱신.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: 시스템 구동 및 유저 플로우 -->
+        <div class="slide" id="slide-4">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>03. End-to-End 행정 워크플로우</h2>
+                    <p class="slide-subtitle">지자체 보안망을 고려한 오프라인 CSV 임포트 기반 4단계 여정</p>
+                </div>
+                <div class="slide-index">04 / 05</div>
+            </div>
+            <div class="slide-body">
+                <div class="grid-container">
+                    <div class="card">
+                        <div class="card-tag">Phase 1 & 2</div>
+                        <h3>CSV 감리 및 지능형 필터</h3>
+                        <p>공무원이 내부망 수집 CSV를 드래그 업로드하면 <span class="highlight">1세트 AI 데이터 감리 에이전트</span>가 정제한 후, PostGIS GIST 공간 연산을 통해 위법/시공 불가 필지를 <span class="highlight">0.5초 이내</span>로 사전 배제합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">Phase 3</div>
+                        <h3>AHP Lock & AI 조례 토론</h3>
+                        <p>AHP 일관성 비율(C.R. < 0.1) 수학적 검증을 통과한 가중치만 저장(Lock)하여 게리맨더링을 차단하고, <span class="highlight">2세트 LangGraph RAG 에이전트</span>가 실제 조례를 RAG로 대조하며 주민 합의서를 작성합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">Phase 4</div>
+                        <h3>행정 PDF 리포트 인쇄</h3>
+                        <p>지도 분석, AHP 점수, AI 합의서에 추가로 <span class="highlight">가설건축물 신고 요건 자가진단표 및 도로점용료 자동 산식</span>을 WeasyPrint로 결합하여 1일 이내로 즉시 다운로드 가능한 결재 공문서를 출력합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: 차주 마일스톤 및 로드맵 -->
+        <div class="slide" id="slide-5">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>04. 차주 마일스톤 및 마이그레이션 로드맵</h2>
+                    <p class="slide-subtitle">2주차 스프린트: PostgreSQL / PostGIS DB 구현 및 DDL 마이그레이션</p>
+                </div>
+                <div class="slide-index">05 / 05</div>
+            </div>
+            <div class="slide-body">
+                <div class="grid-container">
+                    <div class="card">
+                        <div class="card-tag">Sprint Task 1</div>
+                        <h3>PostGIS DB 서버 구축</h3>
+                        <p>Docker Compose를 가동하여 PostgreSQL 및 PostGIS 서버 환경을 로컬에 격리 빌드하고, 연속지적도 및 공공 지리 정보 테이블을 위한 13종 DB 스키마 뼈대를 확보합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">Sprint Task 2</div>
+                        <h3>ETL 데이터 적재 파이프라인</h3>
+                        <p>공무원 CSV 데이터(용산구 PNU 정보, 기존 AED/금연구역, 상가, 야간 생활인구)를 SQLAlchemy 기반으로 PostGIS 기하 객체로 형변환(Fuzzy Geocoding)하여 적재하는 파이썬 코드를 구축합니다.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-tag">Sprint Task 3</div>
+                        <h3>React GIS 맵 컴포넌트 연동</h3>
+                        <p>Next.js(React) 단에서 Mapbox GL JS 라이브러리를 바인딩하여 기본 맵을 연동하고, 백엔드의 공간 데이터를 조인할 기본 프론트엔드 UI 대시보드 템플릿 세팅을 완료합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 하단 네비게이션 컨트롤 -->
+    <div class="footer-controls">
+        <div class="btn-group">
+            <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled>PREV</button>
+        </div>
+        <div class="nav-dots" id="dots-container">
+            <!-- JS에서 동적 생성 -->
+        </div>
+        <div class="btn-group">
+            <button class="nav-btn" id="next-btn" onclick="nextSlide()">NEXT</button>
+        </div>
+    </div>
+
+    <!-- 슬라이드 컨트롤 스크립트 -->
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 5;
+
+        // 동적으로 닷 네비게이션 생성
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 1; i <= totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (i === 1) dot.classList.add('active');
+            dot.setAttribute('onclick', `goToSlide(${i})`);
+            dot.id = `dot-${i}`;
+            dotsContainer.appendChild(dot);
+        }
+
+        function updateSlideUI() {
+            // 모든 슬라이드 활성화 클래스 제거
+            for (let i = 1; i <= totalSlides; i++) {
+                document.getElementById(`slide-${i}`).classList.remove('active');
+                document.getElementById(`dot-${i}`).classList.remove('active');
+            }
+
+            // 현재 슬라이드 활성화
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+            document.getElementById(`dot-${currentSlide}`).classList.add('active');
+
+            // 이전/다음 버튼 비활성화 분기
+            document.getElementById('prev-btn').disabled = (currentSlide === 1);
+            document.getElementById('next-btn').disabled = (currentSlide === totalSlides);
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlideUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlideUI();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            currentSlide = slideNum;
+            updateSlideUI();
+        }
+
+        // 키보드 방향키 조작 이벤트 리스너 추가
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>

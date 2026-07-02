@@ -83,7 +83,7 @@ flowchart LR
 
 *   **1단계 (1~2주):** Docker Compose 인프라 구성, PostGIS Extension 탑재, 공공 API 적재 모듈 완성.
 *   **2단계 (3~4주):** GeoPandas 공간 연산 API 구현 및 Mapbox GL JS 후보지 오버레이 렌더링 연동.
-*   **3단계 (5~6주):** LangGraph 기반 3자 토론 흐름 통제 엔진 구축 및 실시간 WebSocket 채팅 프론트 연동.
+*   **3단계 (5~6주):** LangGraph 기반 [2세트: 3인 페르소나 RAG 토론 심의 위원회] 연동 및 SSE 실시간 스트리밍 구현 및 실시간 WebSocket 채팅 프론트 연동.
 *   **4단계 (7주):** HTML/CSS 템플릿 기반 리포트 컴파일러(PDF) 탑재 및 전체 모듈 연계.
 *   **5단계 (8주):** 통합 시나리오 테스트 작성 및 시연용 데모 촬영.
 
