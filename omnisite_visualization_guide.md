@@ -51,41 +51,44 @@ graph TD
 
 ---
 
-## 🌐 3. 시스템 아키텍처 구성도 (Mermaid Code)
+## 🌐 3. 시스템 아키텍처 구성도 (Eraser.io Premium Code)
 
 단일 이원화 통신 병목을 해결한 Next.js - FastAPI Monolith - AWS EKS 아키텍처 구조도입니다.
 
-```mermaid
-graph LR
-    classDef frontend fill:#001e3d,stroke:#00d2ff,stroke-width:2px,color:#fff;
-    classDef backend fill:#0c2a11,stroke:#39ff14,stroke-width:2px,color:#fff;
-    classDef database fill:#250f2b,stroke:#d624da,stroke-width:2px,color:#fff;
-    classDef infra fill:#333,stroke:#ff9900,stroke-width:2px,color:#fff;
+```text
+// OmniSite E2E Architecture Diagram (Eraser.io Premium Syntax)
 
-    subgraph Client [프레젠테이션 레이어]
-        UI[Next.js Frontend]:::frontend
-        MAP[Mapbox GL JS]:::frontend
-    end
+// Set the layout flow for maximum readability in slide shows
+direction: left-to-right
 
-    subgraph AWS [AWS EKS 클러스터 - 테넌트 격리]
-        API[FastAPI Monolith Backend]:::backend
-        RAG[LangGraph Multi-Agent]:::backend
-        PDF[WeasyPrint Engine]:::backend
-    end
+group Client_Presentation [color: blue, icon: chrome, label: "Presentation Layer"] {
+  NextJS [icon: nextjs, label: "Next.js Web Frontend"]
+  Mapbox [icon: mapbox, label: "Mapbox GL JS Map View"]
+}
 
-    subgraph Storage [데이터 베이스 레이어]
-        GIS[(PostgreSQL + PostGIS)]:::database
-        VEC[(Chroma DB / RAG Vector Store)]:::database
-    end
+group FastAPI_Monolith_Backend [color: green, icon: fastapi, label: "FastAPI Core Backend Engine"] {
+  FastAPI [icon: fastapi, label: "FastAPI API Server"]
+  LangGraph [icon: python, label: "LangGraph Multi-Agent RAG"]
+  WeasyPrint [icon: pdf, label: "WeasyPrint PDF Generator"]
+}
 
-    UI -->|1. CSV/PDF 일괄 업로드| API
-    UI -->|2. AHP 슬라이더 가중치 전송| API
-    API -->|3. GIST 공간 인덱스 차집합| GIS
-    API -->|4. 조례 유사도 검색| VEC
-    RAG -->|5. GPT-4o 3자 토론 기동| API
-    API -->|6. SSE 실시간 스트리밍| UI
-    API -->|7. PDF 리포트 컴파일| PDF
-    PDF -->|8. WeasyPrint PDF 인쇄| UI
+group Data_Storage [color: purple, icon: database, label: "Storage Layer"] {
+  PostGIS [icon: postgresql, label: "PostgreSQL / PostGIS DB"]
+  VectorDB [icon: database, label: "Vector RAG Store (Chroma)"]
+}
+
+// E2E Data Flows with custom line styling and color mapping
+NextJS > FastAPI : "1. CSV/PDF 일괄 업로드" [color: blue, line: solid]
+NextJS > FastAPI : "2. AHP 슬라이더 가중치" [color: blue, line: dashed]
+Mapbox > FastAPI : "3. Visual HITL 핀 보정 API" [color: blue, line: dotted]
+
+FastAPI > PostGIS : "4. ST_Difference 공간 연산" [color: green, line: solid]
+FastAPI > VectorDB : "5. 조례 RAG 유사도 검색" [color: green, line: dashed]
+LangGraph > FastAPI : "6. GPT-4o 3자 모의 토론" [color: red, line: solid]
+
+FastAPI > NextJS : "7. SSE 실시간 토론 스트리밍" [color: red, line: solid]
+FastAPI > WeasyPrint : "8. HTML-to-PDF 컴파일" [color: gray, line: dashed]
+WeasyPrint > NextJS : "9. 행정 보고서 PDF 다운로드" [color: gray, line: solid]
 ```
 
 ---
