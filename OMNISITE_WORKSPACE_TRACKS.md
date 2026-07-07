@@ -1,50 +1,43 @@
-# 🛡️ OmniSite 프로젝트 트랙별 독립 병렬 개발 현황 명세 (ADR-003)
+# 🛡️ OmniSite 프로젝트 선행 가이드라인 기반 협업 명세 (ADR-003)
 
-본 문서는 스마트시티 SDSS 플랫폼 **OmniSite**의 개발 생산성을 극대화하기 위해, **메인 협업 개발 트랙**과 **조장 배종현 님의 단독 R&D 트랙**을 완벽하게 격리하여 병렬 운영하는 아키텍처 및 형상관리 정책을 수립한 기술 명세입니다.
-
----
-
-## 📄 형상 관리 분리 정책 (Branch & Folder Isolation)
-*   **배경**: 메인 개발팀의 풀스택 SSE 연동 및 비동기 DB 인프라 작업 영역과, 조장 배종현 님의 조례 PDF 관리창구/Deletion Engine 단독 구현 레이어가 서로 상호 충돌(Conflict)을 일으키지 않도록 격리합니다.
-*   **운영 원칙**: 
-    1.  **메인 협업 트랙**의 산출물은 레포지토리 루트(`backend/`, `frontend/`, 마스터 기획 문서)에 등재합니다.
-    2.  **조장 단독 트랙**의 산출물은 루트 하위의 격리 백업 디렉토리인 `[조장_단독_진행_0706/](file:///Users/jcm0314/Downloads/빅프로젝트/조장_단독_진행_0706)` 상에 온전히 보존하며, 메인 협업 소스코드 브랜치에 직접 강제 덮어쓰기(Overwrite)하지 않습니다.
+본 문서는 스마트시티 SDSS 플랫폼 **OmniSite**의 애자일 개발 생산성을 높이기 위해 채택한 **"조장 선행 R&D ➔ 개발팀 마스터 병합 및 고도화"** 협업 모델과 통합 형상관리 정책을 기록한 기술 명세입니다.
 
 ---
 
-## 🗺️ 2대 병렬 개발 트랙 진행 현황판
+## 📄 기술 선도 협업 모델 (Leader-Driven Fast Track)
+*   **협업 메커니즘**: 
+    1.  **조례 RAG 독립 관리 및 Deletion Engine** 등의 신규/예외 레이어는 조장(배종현)이 단독 고도화 트랙에서 고속으로 선행 검증(PoC)합니다.
+    2.  검증 완료된 기능(DTO 스펙, API 뼈대, Mock 가이드)은 즉시 **마스터 개발팀의 마스터 브랜치(`main`)에 공식 병합(Merge)**하여 동기화합니다.
+    3.  PM(장천명)과 개발팀원(동현, 규민 등)은 이 이식된 뼈대 소스코드를 기점으로 **비동기 DB 세션 주입(`get_db`), PostGIS 공간 차집합 연산 및 실시간 SSE 스트리밍 라우팅**을 실물 구현 및 유기적 결합해 나갑니다.
+
+---
+
+## 🗺️ 1주차 스프린트 통합 피처 매핑 현황
 
 ```
-[OmniSite 마스터 레포지토리]
+[OmniSite 통합 마스터 브랜치 (main)]
        │
-       ├─► 🛠️ [트랙 1] 메인 협업 개발 트랙 (장천명, 찬진, 동현, 규민, 혜성, 승헌)
-       │    └─ Next.js - FastAPI SSE 스트리밍 토론 채널 연동 마감
-       │    └─ Docker PostgreSQL/PostGIS 로컬 DB 기동 및 비동기 SQLAlchemy 2.0 세션 포팅
+       ├─► ⚖️ [조장 배종현 님 선행 이식분]
+       │    └─ RAG 조례 PDF 독립 다중 업로드 모달 분리 창구 탑재
+       │    └─ 조례 목록 비동기 조회 및 Deletion 캐시 수거 물리 삭제 엔진 구축
+       │    └─ 회원가입/JWT 로그인 이관에 따른 API 모킹 가이드 배포
        │
-       └─► ⚖️ [트랙 2] 조장 단독 R&D 트랙 (배종현) ── [격리 디렉토리 보존]
-            └─ 조례 PDF 독립 다중 업로드 모달 분리 창구 구현
-            └─ 조례 중복 방지 가드 (400 Bad Request) 및 물리 캐시 삭제 엔진 (Deletion Engine)
+       └─► 🛠️ [PM 장천명 및 개발팀 고도화 연동분]
+            └─ Next.js - FastAPI SSE 스트리밍 토론 채널 비동기 가동
+            └─ Docker PostgreSQL/PostGIS 로컬 DB 기동 및 비동기 SQLAlchemy 2.0 세션 포팅
+            └─ e2e_test.py 스크립트 기반 E2E 연동 테스트 자가검증 완료
 ```
 
-### 1️⃣ [트랙 1] 메인 협업 개발 트랙 (현행화 상태)
-*   **스프린트 목표**: 1주차 핵심 E2E 채널(SSE) 연동 및 로컬 가상화 공간 DB 인프라 구축.
-*   **완료 피처**:
-    *   FastAPI의 `EventSourceResponse` 기반 실시간 토론 대사 1.5초 간격 스트리밍.
-    *   토론 종결(`is_finished`) 검출 즉시 결과 통계 API(`/results`) 연쇄 동적 Fetch 바인딩.
-    *   `docker compose` 기반 PostGIS + pgvector 통합 컨테이너 구동 성공 및 SQLAlchemy 2.0 비동기 헬퍼(`get_db`) 포팅 완료.
-*   **주요 소스**: `backend/app/api/v1/simulations.py`, `backend/app/db/session.py`, `frontend/src/app/page.js`
+### 1️⃣ 조장 선행 설계 이식 완료 내역
+*   **조례 다중 업로드**: `POST /api/v1/upload/regulation` 및 프론트 UI 개편을 통해 RAG용 다중 PDF 법규 업로드 체계를 이식했습니다.
+*   **조례 목록 비동기 조회**: 상단 네비게이션 헤더에 `📋 조례 목록 조회` 독립 모달 팝업을 배치해 `GET /api/v1/upload/regulations` API와 연동을 마쳤습니다.
+*   **캐시 수거 물리 삭제 엔진**: `DELETE /api/v1/upload/regulations/{filename}` API로 원본 PDF와 임베딩용 텍스트 캐시(`[파일명].txt`) 물리 동시 소거 구조를 확보했습니다.
 
-### 2️⃣ [트랙 2] 조장 단독 R&D 트랙 (독립 보존 상태)
-*   **스프린트 목표**: RAG 조례 PDF 창구 독립 모달 분리 및 중복 방지, 개별 물리 파일/캐시 소거 검증.
-*   **완료 피처**:
-    *   메인 판넬 우측의 RAG 업로더를 상단 헤더의 `[⚖️ 법규 RAG 관리]` 전용 모달 창구로 격리 분리.
-    *   `GET /upload/regulations` API 기반 조례 목록 독립 팝업 조회 리스팅.
-    *   동일 파일명 PDF 재적재 시 RAG 중복 방지 가드(400 Bad Request) 작동.
-    *   `DELETE /upload/regulations/{filename}` 호출 시 원본 PDF와 텍스트 추출 캐시(`[파일명].txt`) 물리 동시 소거.
-*   **산출물 경로**: [조장_단독_진행_0706/](file:///Users/jcm0314/Downloads/빅프로젝트/조장_단독_진행_0706) 하위 아카이브
+### 2️⃣ 마스터 개발팀 추가 고도화 완료 내역
+*   **SSE 실시간 토론 중계**: FastAPI의 `EventSourceResponse` 기반 실시간 1.5초 간격 토론 대사 스트리밍 및 종결(`is_finished`) 검출 시 최종 통계 API(`/results`) 자동 Fetch 바인딩 구현.
+*   **비동기 DB 팩토리 포팅**: `docker-compose.yml` 기반 로컬 Postgres(PostGIS+pgvector) 컨테이너 가동 성공 및 SQLAlchemy 2.0 비동기 헬퍼(`session.py` 내 `get_db`) 이식 완료.
 
 ---
 
-## 🛠️ 기대 효과 및 상호 시너지
-*   메인 개발팀은 조장님의 변경 코드로 인한 의존성 이격 리스크 없이, 안정적으로 PostGIS 공간 쿼리와 RAG 프롬프트를 2주차에 이식할 수 있습니다.
-*   조장님의 Deletion Engine과 중복 가드 기능은 향후 EKS 상용 배포 및 마이크로서비스 격리(2단계 배포 프로세스) 시점에 독립 패키지로 깔끔하게 병합 이식될 예정입니다.
+## 🛠️ 향후 스프린트 시너지
+*   개발팀(동현, 규민, 혜성, 승헌 등)은 조장님이 이식한 DTO 스키마(`app/schemas/`) 및 API 규격을 백본으로 삼아, 2주차 공간 적재 및 RAG 연산을 동일한 규격으로 안심하고 코딩할 수 있게 되었습니다.
