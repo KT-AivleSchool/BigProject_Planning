@@ -44,6 +44,10 @@
     *   *기능*: WeasyPrint 기반의 도로점용료 자동 산식이 포함된 정식 행정 타당성 분석 보고서 PDF 인쇄 다운로드 제공.
     *   *환류*: 실제 준공 공문서(PDF) 업로드 시 OCR 파싱을 통해 기존 3대 타결 시나리오와 유사성을 비교 검증(Compliant 판정)하되, RAG 피드백 오염(Model Collapse) 방지를 위해 공문서 및 RAG 텍스트 캐시 물리 동시 삭제 엔진(Deletion Engine)과 이력 데이터 격리 적재 테이블 가동.
 
+7.  **도시행정망 실무자 인증 및 세션 가드 (JWT & Bcrypt Security)**:
+    *   *기능*: 구청 실무자 및 행정망 관리자 세션 보호를 위한 OAuth2 비밀번호 암호화(Bcrypt) 기반 회원가입(`POST /auth/register`) 및 JWT 토큰 기반 로그인(`POST /auth/login`) API의 E2E 실물 연동.
+    *   *가드*: Bcrypt 해싱 연산의 CPU-bound 자원 병목을 방지하기 위해 FastAPI 이벤트 루프 외부에 있는 **별도 작업 스레드 풀(Thread Pool Executor)로 안전하게 격리 처리**하여 전체 서버 동시성 보장.
+
 ---
 
 ### 🧠 AI 및 공간정보 기술
