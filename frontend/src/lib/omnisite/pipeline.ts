@@ -1,8 +1,9 @@
 /**
  * 파이프라인 실행 API — `pipeline_run_contract.md` 가 유일한 기준.
  * =============================================================
- * 엔드포인트는 **4개다.** 실측(2026-08-05, app/api/v1/pipeline.py):
+ * 엔드포인트는 **5개다.** 실측(2026-08-05, app/api/v1/pipeline.py):
  *
+ *   GET  /api/v1/pipeline/runs                        → 내 분석 및 미할당 내역 목록 조회
  *   POST /api/v1/pipeline/runs                        → 202 {run_id}
  *   GET  /api/v1/pipeline/runs/{run_id}               → status.json 원문
  *   GET  /api/v1/pipeline/runs/{run_id}/artifacts/{n} → 산출물 파일 원본
@@ -32,9 +33,7 @@
  *      걸려 조용히 뒤집히고, `direction_source` 가 산출물에서 사라진다.
  *    - 409 는 실패가 아니라 **점유**다 — 같은 도메인을 다른 run 이 잡고 있다.
  *
- * 🔴 **run 목록 API 도 없다.** 그래서 방금 만든 run_id 를 프런트가 직접
- *    기억해야 한다(`runStore.ts`). 서버가 유일한 진실인데 목록을 못 물어보므로,
- *    브라우저에 남은 id 는 항상 서버에 되물어 확인한 뒤 쓴다.
+ *    - 409 는 실패가 아니라 **점유**다 — 같은 도메인을 다른 run 이 잡고 있다.
  */
 import { getJson, postJson, getText } from "./client";
 import { parseCsv } from "./csv";
@@ -54,6 +53,16 @@ import type {
 
 const BASE = "/api/v1/pipeline";
 
+export interface RunMeta {
+  run_id: string;
+  domain: string;
+  mode: string;
+  status: string;
+  started_at: string | null;
+  finished_at: string | null;
+  is_mine: boolean;
+}
+
 /**
  * 계약 2절. `mode` 는 이 둘뿐이다.
  *
@@ -66,6 +75,10 @@ const BASE = "/api/v1/pipeline";
  */
 export const MODE_FIXTURE = "fixture";
 export const MODE_HITL = "hitl";
+
+export async function fetchRuns(mine: boolean = true): Promise<{ runs: RunMeta[] }> {
+  return getJson<{ runs: RunMeta[] }>(`${BASE}/runs?mine=${mine}`);
+}
 
 export async function createRun(
   domain: string,

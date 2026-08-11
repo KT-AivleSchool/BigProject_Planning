@@ -11,7 +11,7 @@ const SCREEN = SCREENS[0]!;
 
 export default function Screen1Page() {
   const router = useRouter();
-  const { run, starting, error, start } = useRun();
+  const { run, starting, error, start, isReadOnly } = useRun();
   
   const [typedDomain, setTypedDomain] = useState<string | null>(null);
   const domain = typedDomain ?? run?.domain ?? "";
@@ -51,91 +51,135 @@ export default function Screen1Page() {
       />
 
       <div className="mt-8 max-w-5xl mx-auto flex flex-col gap-8 pb-12">
-        {/* Step 1: 데이터 업로드 (Swapped) */}
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-8 py-5 border-b border-gray-100 bg-gray-50/50">
+        {isReadOnly && run && (
+          <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">1</div>
-              <h2 className="text-lg font-bold text-gray-800">데이터 및 문서 업로드</h2>
-            </div>
-            <p className="mt-1 ml-11 text-sm text-gray-500">분석에 필요한 공간 데이터나 참고할 법규 문서를 업로드합니다.</p>
-          </div>
-          
-          <div className="p-8">
-            <div className="flex gap-2 p-1 rounded-xl bg-gray-100/80 max-w-sm mb-6">
-              {(
-                [
-                  ["data", "📊 분석 데이터 (SHP, CSV)"],
-                  ["law", "📄 조례·법규 (PDF, HWP)"],
-                ] as const
-              ).map(([k, label]) => (
-                <button
-                  key={k}
-                  type="button"
-                  onClick={() => setTab(k)}
-                  className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
-                    tab === k ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            <div className="w-full rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 py-16 px-6 text-center hover:bg-gray-50 hover:border-blue-400 transition-colors group cursor-pointer">
-              <div className="w-16 h-16 mx-auto bg-white rounded-full shadow-sm border border-gray-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <div>
+                <strong className="font-semibold block sm:inline">과거 분석 내역 조회 중 (읽기 전용)</strong>
+                <span className="sm:ml-2 text-sm text-blue-700 block sm:inline">이전에 실행된 '{run.domain}' 입지 분석 결과를 확인하고 있습니다.</span>
               </div>
-              <h3 className="text-base font-bold text-gray-800">클릭하여 파일 선택 또는 드래그 앤 드롭</h3>
-              <p className="text-sm text-gray-500 mt-2 max-w-sm mx-auto leading-relaxed">
-                {tab === 'data' ? 'SHP, CSV, XLSX, GEOJSON 형식의 공간 데이터를 업로드할 수 있습니다.' : 'PDF, HWP, DOCX 등 참고할 지자체 조례 및 법규 문서를 업로드합니다.'}
-              </p>
             </div>
+            <button 
+              onClick={() => window.location.href = '/'}
+              className="mt-3 sm:mt-0 whitespace-nowrap bg-white text-blue-700 px-4 py-2 rounded-md text-sm font-medium border border-blue-200 hover:bg-blue-100 transition-colors"
+            >
+              새 분석 시작
+            </button>
           </div>
-        </section>
+        )}
 
-        {/* Step 2: 분석 대상 정의 (Swapped) */}
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-8 py-5 border-b border-gray-100 bg-gray-50/50">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">2</div>
-              <h2 className="text-lg font-bold text-gray-800">분석 기본 정보</h2>
-            </div>
-            <p className="mt-1 ml-11 text-sm text-gray-500">어떤 지역의 어떤 시설을 분석할지 정의합니다.</p>
+        {/* Step 1 & 2 & 3: 과거 내역에서는 폼 자체를 지우고 안내문만 표시 (§7-6) */}
+        {isReadOnly ? (
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-12 text-center text-gray-600 shadow-sm mt-4">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-4 text-gray-400">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">이 run의 입력 파일 목록은 기록돼 있지 않습니다.</h3>
+            <p className="text-sm text-gray-500 mb-8 max-w-lg mx-auto">
+              도메인의 현재 파일 목록은 이전 분석 시점의 데이터와 다를 수 있으므로 표시하지 않습니다.
+            </p>
+            <button 
+              onClick={() => window.location.href = '/report'}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm inline-flex items-center gap-2"
+            >
+              분석 결과(화면2)로 돌아가기
+            </button>
           </div>
-          <div className="p-8 grid gap-6 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-semibold text-gray-800 mb-2">
-                분석 도메인 <span className="text-blue-500">(필수)</span>
-              </label>
-              <input
-                ref={domainRef}
-                value={domain}
-                onChange={(e) => setDomain(e.target.value)}
-                placeholder="예) 흡연, 전기차, 따릉이"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors bg-gray-50 hover:bg-white"
-              />
-              {inputError && (
-                <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                  {inputError}
-                </p>
-              )}
-            </div>
-            <Field label="분석 지역 (선택)" placeholder="예) 서울특별시 용산구" value={region} onChange={setRegion} />
-            <Field label="시설 유형 (선택)" placeholder="예) 흡연부스" value={facility} onChange={setFacility} />
-            <div className="sm:col-span-2">
-              <Field label="사용자 의도 (선택)" placeholder="분석 시 특별히 고려해야 할 사항을 자유롭게 입력하세요" value={intent} onChange={setIntent} />
-            </div>
-          </div>
-        </section>
+        ) : (
+          <>
+            {/* Step 1: 데이터 업로드 (Swapped) */}
+            <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-8 py-5 border-b border-gray-100 bg-gray-50/50">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">1</div>
+                  <h2 className="text-lg font-bold text-gray-800">데이터 및 문서 업로드</h2>
+                </div>
+                <p className="mt-1 ml-11 text-sm text-gray-500">분석에 필요한 공간 데이터나 참고할 법규 문서를 업로드합니다.</p>
+              </div>
+              
+              <div className="p-8">
+                <div className="flex gap-2 p-1 rounded-xl bg-gray-100/80 max-w-sm mb-6">
+                  {(
+                    [
+                      ["data", "📊 분석 데이터 (SHP, CSV)"],
+                      ["law", "📄 조례·법규 (PDF, HWP)"],
+                    ] as const
+                  ).map(([k, label]) => (
+                    <button
+                      key={k}
+                      type="button"
+                      onClick={() => setTab(k)}
+                      className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                        tab === k ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="w-full rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 py-16 px-6 text-center hover:bg-gray-50 hover:border-blue-400 transition-colors group cursor-pointer">
+                  <div className="w-16 h-16 mx-auto bg-white rounded-full shadow-sm border border-gray-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                  </div>
+                  <h3 className="text-base font-bold text-gray-800">클릭하여 파일 선택 또는 드래그 앤 드롭</h3>
+                  <p className="text-sm text-gray-500 mt-2 max-w-sm mx-auto leading-relaxed">
+                    {tab === 'data' ? 'SHP, CSV, XLSX, GEOJSON 형식의 공간 데이터를 업로드할 수 있습니다.' : 'PDF, HWP, DOCX 등 참고할 지자체 조례 및 법규 문서를 업로드합니다.'}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Step 2: 분석 대상 정의 (Swapped) */}
+            <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-8 py-5 border-b border-gray-100 bg-gray-50/50">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">2</div>
+                  <h2 className="text-lg font-bold text-gray-800">분석 기본 정보</h2>
+                </div>
+                <p className="mt-1 ml-11 text-sm text-gray-500">어떤 지역의 어떤 시설을 분석할지 정의합니다.</p>
+              </div>
+              <div className="p-8 grid gap-6 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">
+                    분석 도메인 <span className="text-blue-500">(필수)</span>
+                  </label>
+                  <input
+                    ref={domainRef}
+                    value={domain}
+                    onChange={(e) => setDomain(e.target.value)}
+                    placeholder="예) 흡연, 전기차, 따릉이"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors bg-gray-50 hover:bg-white"
+                  />
+                  {inputError && (
+                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                      {inputError}
+                    </p>
+                  )}
+                </div>
+                <Field label="분석 지역 (선택)" placeholder="예) 서울특별시 용산구" value={region} onChange={setRegion} />
+                <Field label="시설 유형 (선택)" placeholder="예) 흡연부스" value={facility} onChange={setFacility} />
+                <div className="sm:col-span-2">
+                  <Field label="사용자 의도 (선택)" placeholder="분석 시 특별히 고려해야 할 사항을 자유롭게 입력하세요" value={intent} onChange={setIntent} />
+                </div>
+              </div>
+            </section>
+          </>
+        )}
 
         {/* Step 3: 실행 */}
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <section className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden ${isReadOnly ? 'hidden' : ''}`}>
           <div className="px-8 py-5 border-b border-gray-100 bg-gray-50/50">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">3</div>

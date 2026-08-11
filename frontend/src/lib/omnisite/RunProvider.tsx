@@ -67,6 +67,9 @@ interface RunContextValue {
    */
   refresh: () => Promise<void>;
   reset: () => void;
+  /** 과거 run을 읽기 전용으로 불러옵니다. */
+  loadHistoricalRun: (runId: string) => Promise<void>;
+  isReadOnly: boolean;
 }
 
 const RunContext = createContext<RunContextValue | null>(null);
@@ -102,6 +105,7 @@ export function RunProvider({ children }: { children: React.ReactNode }) {
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [runningElapsedSec, setRunningElapsedSec] = useState(0);
+  const [isReadOnly, setIsReadOnly] = useState(false);
 
   /** 진행 중 단계가 바뀐 시각. 단계별 경과 시간을 재려고 둔다. */
   const stepStartedAt = useRef<{ id: string; at: number } | null>(null);
@@ -140,7 +144,10 @@ export function RunProvider({ children }: { children: React.ReactNode }) {
       if (!id) return;
       try {
         const doc = await fetchRun(id);
-        if (!cancelled) applyRun(doc);
+        if (!cancelled) {
+          applyRun(doc);
+          setIsReadOnly(false);
+        }
       } catch (e: unknown) {
         if (cancelled) return;
         // 404 는 "서버에서 사라진 run" 이다. 조용히 넘기지 않고 알린 뒤 지운다.
@@ -195,6 +202,7 @@ export function RunProvider({ children }: { children: React.ReactNode }) {
         writeRunId(id);
         const doc = await fetchRun(id);
         applyRun(doc);
+        setIsReadOnly(false);
         return id;
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : String(e));
@@ -243,6 +251,32 @@ export function RunProvider({ children }: { children: React.ReactNode }) {
     clearRunId();
     setRun(null);
     setError(null);
+    setIsReadOnly(false);
+  }, []);
+
+  const loadHistoricalRun = useCallback(async (runId: string) => {
+    try {
+      const doc = await fetchRun(runId);
+      setRun(doc);
+      writeRunId(runId); // 현재 보고 있는 run_id를 변경
+      setIsReadOnly(true);
+      setError(null);
+      
+      // §7-5 과거 run 진입 시 기존 상태 비움 처리
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("omnisite.sitePick.v1");
+        sessionStorage.removeItem("omnisite.personas.v2");
+        sessionStorage.removeItem("omnisite.hearingB.v1");
+        
+        sessionStorage.removeItem("sim_messages");
+        sessionStorage.removeItem("sim_metrics");
+        sessionStorage.removeItem("sim_started");
+        sessionStorage.removeItem("sim_finished");
+        sessionStorage.removeItem("sim_parcel");
+      }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
   }, []);
 
   return (
@@ -258,6 +292,8 @@ export function RunProvider({ children }: { children: React.ReactNode }) {
         answerWeight,
         refresh,
         reset,
+        loadHistoricalRun,
+        isReadOnly,
       }}
     >
       {children}

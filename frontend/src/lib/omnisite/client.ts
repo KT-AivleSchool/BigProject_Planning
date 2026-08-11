@@ -50,25 +50,38 @@ async function readDetail(res: Response): Promise<string> {
   return text.slice(0, 300);
 }
 
-import { getAuthToken } from "./auth";
+import { getAuthToken, refreshAuthToken, setAuthToken } from "./auth";
 
 async function request(url: string, init?: RequestInit): Promise<Response> {
   let res: Response;
-  try {
+  const doFetch = async (token: string | null) => {
     const headers = new Headers(init?.headers);
-    const token = getAuthToken();
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
-    
-    res = await fetch(url, { 
+    return await fetch(url, { 
       cache: "no-store", 
       ...init,
       headers
     });
+  };
+
+  try {
+    let token = getAuthToken();
+    res = await doFetch(token);
+
+    // 401 발생 시 토큰 갱신 후 1회 재시도 (단 refresh 엔드포인트 자체는 제외)
+    if (res.status === 401 && !url.includes("/auth/refresh")) {
+      const refreshed = await refreshAuthToken();
+      if (refreshed) {
+        token = refreshed.access_token;
+        res = await doFetch(token);
+      }
+    }
   } catch (e) {
     throw new NetworkError(url, e);
   }
+  
   if (!res.ok) throw new ApiError(url, res.status, await readDetail(res));
   return res;
 }

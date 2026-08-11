@@ -14,7 +14,7 @@ import { NAV_SCREENS, screenOf, isScreenReady, isScreenAllowed } from "@/lib/omn
 import { useRun } from "@/lib/omnisite/RunProvider";
 import type { ArtifactName, RunDoc } from "@/lib/omnisite/types";
 import { AuthModal } from "./AuthModal";
-import { getAuthUser, setAuthUser, setAuthToken, UserResponse } from "@/lib/omnisite/auth";
+import { getAuthUser, setAuthUser, setAuthToken, refreshAuthToken, UserResponse } from "@/lib/omnisite/auth";
 
 export function Header() {
   const pathname = usePathname();
@@ -109,6 +109,34 @@ export function Header() {
                   </Link>
                   <span className="text-gray-300">|</span>
                   <Link href="/mypage" className="hover:text-primary transition-colors">마이페이지</Link>
+                  <span className="text-gray-300">|</span>
+                  <button 
+                    onClick={async (e) => {
+                      const btn = e.currentTarget;
+                      const originalText = btn.innerText;
+                      btn.innerText = "연장 중...";
+                      const refreshed = await refreshAuthToken();
+                      if (refreshed) {
+                        btn.innerText = "연장 완료!";
+                        btn.className = "text-green-600 font-semibold transition-colors";
+                        setTimeout(() => {
+                          btn.innerText = originalText;
+                          btn.className = "text-primary font-semibold hover:text-primary/80 transition-colors";
+                        }, 2000);
+                      } else {
+                        btn.innerText = "연장 실패";
+                        btn.className = "text-red-500 transition-colors";
+                        setTimeout(() => {
+                          btn.innerText = originalText;
+                          btn.className = "text-primary font-semibold hover:text-primary/80 transition-colors";
+                        }, 2000);
+                      }
+                    }} 
+                    className="text-primary font-semibold hover:text-primary/80 transition-colors"
+                    title="로그인 시간을 1시간 연장합니다."
+                  >
+                    토큰 연장
+                  </button>
                   <span className="text-gray-300">|</span>
                   <button onClick={handleLogout} className="hover:text-primary transition-colors">로그아웃</button>
                 </>
