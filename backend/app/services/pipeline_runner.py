@@ -36,6 +36,8 @@ from datetime import datetime
 from pathlib import Path
 
 from app.config import BASE_DIR, DOMAIN_ROOT, domain_prefix, settings
+from app.core.config import MODES, MODE_FIXTURE, MODE_PRODUCTION
+from app.services.run_history import record_run_start, record_run_status_change
 
 RUNS_ROOT = Path(BASE_DIR) / "runs"
 SERVICES_DIR = Path(BASE_DIR) / "app" / "services"
@@ -224,6 +226,7 @@ def _reap_orphans() -> None:
             if s.get("status") == "running":
                 s["status"] = "failed"
         _write_status(doc["run_id"], doc)
+        record_run_status_change(doc["run_id"], "failed")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -522,7 +525,7 @@ def _resume_index(mode: str, gate_id: str) -> int:
     return plan.index(f"gate:{gate_id}") + 1
 
 
-def start_run(domain: str, mode: str) -> str:
+def start_run(domain: str, mode: str, user_input: str | None = None, user_id: int | None = None) -> str:
     """검증 → run 폴더 준비 → 백그라운드 실행. run_id 를 돌려준다."""
     if mode not in MODES:
         raise RunRequestError(
@@ -546,6 +549,7 @@ def start_run(domain: str, mode: str) -> str:
         # 거짓말을 한다(원칙 4). 나머지 6개는 아직 없으므로 그대로 null 이다.
         _refresh_artifacts(doc)
         _write_status(run_id, doc)
+        record_run_start(run_id, domain, mode, user_input, user_id)
     except Exception:
         with _LOCK:
             _ACTIVE.pop(domain, None)
@@ -609,9 +613,12 @@ def _execute(run_id: str, domain: str, mode: str, start: int = 0) -> None:
             doc["finished_at"] = _now_iso()
             _refresh_artifacts(doc)
             _write_status(run_id, doc)
+            record_run_status_change(run_id, doc["status"])
             with _LOCK:
                 if _ACTIVE.get(domain) == run_id:
                     _ACTIVE.pop(domain, None)
+        else:
+            record_run_status_change(run_id, "awaiting_hitl")
 
 
 class _StepFailed(Exception):
